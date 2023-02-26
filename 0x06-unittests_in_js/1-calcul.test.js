@@ -1,46 +1,42 @@
 const assert = require('assert');
-const calculateNumber = require('./1-calcul');
+const mocha = require('mocha');
 
-describe('test calculate number', () => {
-  it('checks the rounded sum', () => {
-    assert.equal(calculateNumber('SUM', 1, 3), 4);
-    assert.equal(calculateNumber('SUM', 1, 3.7), 5);
-    assert.equal(calculateNumber('SUM', 1.2, 3.7), 5);
-    assert.equal(calculateNumber('SUM', 1.5, 3.7), 6);
-    assert.equal(calculateNumber('SUM', -1, 3), 2);
-    assert.equal(calculateNumber('SUM', -1, -4), -5);
-    assert.equal(calculateNumber('SUM', -1.2, -1.4), -2);
-    assert.equal(calculateNumber('SUM', -2, 3.2), 1);
+const calculateNumber = require('./0-calcul');
+
+describe('calculateNumber', () => {
+  it('should return sum of integers', () => {
+    assert.strictEqual(calculateNumber(1, 3), 4);
+    assert.strictEqual(calculateNumber(1, -1), 0);
+    assert.strictEqual(calculateNumber(1, -3), -2);
   });
 
-  it('checks the rounded difference', () => {
-    assert.equal(calculateNumber('SUBTRACT', 1, 3), -2);
-    assert.equal(calculateNumber('SUBTRACT', 3.3, 1), 2);
-    assert.equal(calculateNumber('SUBTRACT', 1.4, 4.5), -4);
-    assert.equal(calculateNumber('SUBTRACT', 1.5, 3.7), -2);
-    assert.equal(calculateNumber('SUBTRACT', -1, 3), -4);
-    assert.equal(calculateNumber('SUBTRACT', -1, -4), 3);
-    assert.equal(calculateNumber('SUBTRACT', -1.2, -1.4), 0);
-    assert.equal(calculateNumber('SUBTRACT', -2, 3.2), -5);
+  it('should round floats', () => {
+    assert.strictEqual(calculateNumber(1, 3.7), 5);
+    assert.strictEqual(calculateNumber(1.2, 3.7), 5);
+    assert.strictEqual(calculateNumber(1.5, 3.7), 6);
+    assert.strictEqual(calculateNumber(0.1, 0), 0);
+    assert.strictEqual(calculateNumber(1.4, -4.5), -3);
   });
 
-  it('checks the rounded division', () => {
-    assert.equal(calculateNumber('DIVIDE', 6, 2), 3);
-    assert.equal(calculateNumber('DIVIDE', 3.3, 1), 3);
-    assert.equal(calculateNumber('DIVIDE', 1.4, 4.5), 0.2);
-    assert.equal(calculateNumber('DIVIDE', 1.7, 3.7), 0.5);
-    assert.equal(calculateNumber('DIVIDE', -6, 3), -2);
-    assert.equal(calculateNumber('DIVIDE', -6, -3), 2);
-    assert.equal(calculateNumber('DIVIDE', -6.2, -3.4), 2);
-    assert.equal(calculateNumber('DIVIDE', -2, 2.1), -1);
-    assert.equal(calculateNumber('DIVIDE', -2, 0), 'Error');
+  it('should return the rounded number if only one is provided', () => {
+    assert.strictEqual(calculateNumber(2), 2);
+    assert.strictEqual(calculateNumber(2.7), 3);
   });
 
+  it('should cast non-numbers into numbers', () => {
+    assert.strictEqual(calculateNumber(true, '3'), 4);
+    assert.strictEqual(calculateNumber(1, '3.7'), 5);
+    assert.strictEqual(calculateNumber('1.2', 3.7), 5);
+  });
 
-  it('checks the NaN number', () => {
-    assert.throws(() => calculateNumber('SUM', NaN, 5), '[Function: TypeError]');
-    assert.throws(() => calculateNumber('SUBTRACT', NaN, 5), '[Function: TypeError]');
-    assert.throws(() => calculateNumber('DIVIDE', NaN, 5), '[Function: TypeError]');
-    assert.throws(() => calculateNumber('shhh', NaN, 5), '[Function: TypeError]');
+  it('should throw typeerror if either param cannot be coerced to a number', () => {
+    assert.throws(() => calculateNumber('hello'), {
+      name: 'TypeError',
+      message: 'Parameters must be numbers'
+    });
+    assert.throws(() => calculateNumber(1.2, 'dog'), {
+      name: 'TypeError',
+      message: 'Parameters must be numbers'
+    });
   });
 });
